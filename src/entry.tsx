@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import createHistory from 'history/createBrowserHistory';
 import {
-    BrowserRouter as Router,
+    Router,
     Route,
     Link,
     Switch
@@ -13,42 +14,29 @@ import { Contact } from './components/contact';
 import { Query } from './components/query';
 import { NotFound } from './components/notfound';
 
-const Child = ({ match }) => (
-    <div>
-      <h3>ID: {match.params.id}</h3>
-    </div>
-  )
-
-interface AppProps {
-    router?: any;
-    history?: any;
-}
+interface AppProps {}
 
 interface AppState {
     url?: string;
 }
+
 class App extends React.Component<AppProps, AppState> {
     constructor(props){
         super(props);
         this.state = { url: '' };
     }
     onclick(e){
-        console.log('onclick', this.props.history);
-        this.props.router.push('/'+ this.state.url);
+        history.push('/' + this.state.url);
     }
 
     onchange(e){
-        console.log('this onchange', e.target.value);
-        this.setState((prevState) => {
-            return {
-                url: e.target
-            }
+        this.setState({
+            url: e.target.value
         });
     }
     render(){
         return(
-            <Router>
-                <div>
+            <div>
                 <ul>
                     <li><Link to='/'>Home</Link></li>
                     <li><Link to='/about'>About</Link></li>
@@ -61,18 +49,21 @@ class App extends React.Component<AppProps, AppState> {
                     <Route exact path="/" component={Home}/>
                     <Route path='/about' component={About}/>
                     <Route path='/contact' component={Contact}/>
-                    <Route path='/query/:foo/:id' component={Query} />
+                    <Route path='/query/:param1/:param2' component={Query} />
                     <Route component={NotFound} />
                 </Switch>
                 <input type="text" onChange={this.onchange.bind(this)}/>
                 <button onClick={this.onclick.bind(this)}>change url</button>
-                </div>
-            </Router>
+            </div>
         )
     }
 };
 
+const history = createHistory();
+
 ReactDOM.render(
-    <App/>,
+    <Router history={history}>
+        <App/>
+    </Router>,
     document.getElementById('root')
 );
