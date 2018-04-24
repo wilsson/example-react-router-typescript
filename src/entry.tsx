@@ -11,7 +11,6 @@ import {
 import { Home } from './components/home';
 import { About } from './components/about';
 import { Contact } from './components/contact';
-import { Query } from './components/query';
 import { NotFound } from './components/notfound';
 
 interface AppProps {}
@@ -19,20 +18,20 @@ interface AppProps {}
 interface AppState {
     url?: string;
 }
-
+function decompose(){
+    console.log('descomponer url y hacer request');
+}
+function assemble(){
+    console.log('armar url');
+}
 class App extends React.Component<AppProps, AppState> {
-    constructor(props){
-        super(props);
-        this.state = { url: '' };
+    onclick(){
+        assemble();
+        history.push('/new?param=1');
     }
-    onclick(e){
-        history.push('/' + this.state.url);
-    }
-
-    onchange(e){
-        this.setState({
-            url: e.target.value
-        });
+    componentWillMount(){
+        console.log(`Reload ${location.pathname}${location.search}${location.hash}`);
+        decompose();
     }
     render(){
         return(
@@ -41,7 +40,6 @@ class App extends React.Component<AppProps, AppState> {
                     <li><Link to='/'>Home</Link></li>
                     <li><Link to='/about'>About</Link></li>
                     <li><Link to='/contact'>Contact</Link></li>
-                    <li><Link to='/query'>Query</Link></li>
                 </ul>
 
                 <hr/>
@@ -49,17 +47,21 @@ class App extends React.Component<AppProps, AppState> {
                     <Route exact path="/" component={Home}/>
                     <Route path='/about' component={About}/>
                     <Route path='/contact' component={Contact}/>
-                    <Route path='/query/:param1/:param2' component={Query} />
                     <Route component={NotFound} />
                 </Switch>
-                <input type="text" onChange={this.onchange.bind(this)}/>
-                <button onClick={this.onclick.bind(this)}>change url</button>
+                <button onClick={this.onclick.bind(this)}>add url</button>
             </div>
         )
     }
 };
 
 const history = createHistory();
+const unlisten = history.listen((location, action) => {
+    // location is an object like window.location
+    console.log(`The current URL is ${location.pathname}${location.search}${location.hash}`)
+    console.log(`The last navigation action was ${action}`);
+    decompose();
+});
 
 ReactDOM.render(
     <Router history={history}>
